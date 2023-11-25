@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+// Define structures for character and enemy
+struct Character {
+    char name[50];
+    int health;
+    int maxHealth;
+    int attack;
+    int defense;
+    int potions;
+};
+
+struct Enemy {
+    char name[50];
+    int health;
+    int attack;
+};
+
+// Function to create a character
+struct Character createCharacter() {
+    struct Character player;
+    printf("Enter your character's name: ");
+    scanf("%s", player.name);
+    player.maxHealth = 100;
+    player.health = player.maxHealth;
+    player.attack = 10;
+    player.defense = 5;
+    player.potions = 3;
+    return player;
+}
+
+// Function to create an enemy
+struct Enemy createEnemy() {
+    struct Enemy enemy;
+    strcpy(enemy.name, "Goblin");
+    enemy.health = 50;
+    enemy.attack = 8;
+    return enemy;
+}
+
+// Function to handle player's turn in combat
+void playerTurn(struct Character *player, struct Enemy *enemy) {
+    int choice;
+    printf("1. Attack\n2. Use Potion\nEnter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            // Implement attack logic
+            break;
+        case 2:
+            if (player->potions > 0) {
+                // Implement potion use logic
+                player->potions--;
+            } else {
+                printf("You don't have any potions left!\n");
+            }
+            break;
+        default:
+            printf("Invalid choice. Try again.\n");
+            playerTurn(player, enemy);
+            break;
+    }
+}
+
+// Function to handle enemy's turn in combat
+void enemyTurn(struct Character *player, struct Enemy *enemy) {
+    // Implement enemy attack logic
+}
+
+// Function to handle combat
+void combat(struct Character *player, struct Enemy *enemy) {
+    printf("A wild %s appears!\n", enemy->name);
+
+    while (player->health > 0 && enemy->health > 0) {
+        // Player's turn
+        playerTurn(player, enemy);
+
+        // Check if the enemy is defeated
+        if (enemy->health <= 0) {
+            printf("You defeated the %s!\n", enemy->name);
+            break;
+        }
+
+        // Enemy's turn
+        enemyTurn(player, enemy);
+
+        // Display updated health
+        printf("Your health: %d/%d\n", player->health, player->maxHealth);
+        printf("%s's health: %d\n", enemy->name, enemy->health);
+    }
+
+    if (player->health <= 0) {
+        printf("You were defeated by the %s. Game over.\n", enemy->name);
+        exit(0);
+    }
+}
+
+// Function to manage inventory
+void manageInventory(struct Character *player) {
+    printf("Inventory Management:\n");
+    printf("1. Check Character Stats\n2. Use Potion\nEnter your choice: ");
+    int choice;
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Name: %s\n", player->name);
+            printf("Health: %d/%d\n", player->health, player->maxHealth);
+            printf("Attack: %d\n", player->attack);
+            printf("Defense: %d\n", player->defense);
+            break;
+        case 2:
+            if (player->potions > 0) {
+                // Implement potion use logic during inventory management
+                player->potions--;
+                player->health += 20; // Example: Using a potion restores 20 health
+                if (player->health > player->maxHealth) {
+                    player->health = player->maxHealth;
+                }
+                printf("Used a potion. Health restored.\n");
+            } else {
+                printf("You don't have any potions left!\n");
+            }
+            break;
+        default:
+            printf("Invalid choice. Try again.\n");
+            break;
+    }
+}
+
+int main() {
+    struct Character player = createCharacter();
+    struct Enemy enemy = createEnemy();
+
+    // Main game loop
+    while (1) {
+        // Explore or encounter enemies based on a game world structure
+
+        // Combat
+        combat(&player, &enemy);
+
+        // Manage inventory after combat
+        manageInventory(&player);
+
+        // Check for game completion conditions
+        // Add more game progression logic here based on your game design
+    }
+
+    return 0;
+}
