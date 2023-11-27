@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Book {
+    int bookId;
+    char title[50];
+    char author[50];
+};
+
+void displayBooks(struct Book books[], int count) {
+    printf("List of Books:\n");
+    printf("ID\tTitle\t\tAuthor\n");
+    printf("----------------------------------\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d\t%s\t\t%s\n", books[i].bookId, books[i].title, books[i].author);
+    }
+    printf("----------------------------------\n");
+}
+
+int main() {
+    struct Book books[100];
+    int bookCount = 0;
+    int choice;
+
+    while (1) {
+        printf("\nLibrary Management System\n");
+        printf("1. Add Book\n");
+        printf("2. Display Books\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("\nEnter Book ID: ");
+                scanf("%d", &books[bookCount].bookId);
+                printf("Enter Book Title: ");
+                scanf(" %[^\n]s", books[bookCount].title);
+                printf("Enter Book Author: ");
+                scanf(" %[^\n]s", books[bookCount].author);
+                bookCount++;
+                break;
+            case 2:
+                displayBooks(books, bookCount);
+                break;
+            case 3:
+                printf("\nExiting the program. Goodbye!\n");
+                exit(0);
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
