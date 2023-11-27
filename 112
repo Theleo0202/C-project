@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_ITEMS 5
+
+// Structures
+typedef struct {
+    char name[50];
+    int damageBonus;
+} Item;
+
+typedef struct {
+    char name[50];
+    int health, attack, defense, experience, level;
+    Item inventory[MAX_ITEMS];
+    int inventorySize;
+} Character;
+
+// Function declarations
+Character createCharacter();
+void displayCharacter(Character player);
+void combat(Character *attacker, Character *defender);
+void manageInventory(Character *player);
+void addItemToInventory(Character *player);
+
+int main() {
+    srand(time(NULL));
+
+    // Create characters
+    Character player1 = createCharacter();
+    Character player2 = createCharacter();
+
+    // Display initial character stats
+    displayCharacter(player1);
+    displayCharacter(player2);
+
+    // Game loop
+    while (1) {
+        printf("\n1. Engage in Combat\n");
+        printf("2. Manage Inventory for %s\n", player1.name);
+        printf("3. Manage Inventory for %s\n", player2.name);
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+
+        int choice;
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                combat(&player1, &player2);
+                break;
+            case 2:
+                manageInventory(&player1);
+                break;
+            case 3:
+                manageInventory(&player2);
+                break;
+            case 4:
+                printf("Exiting the game. Goodbye!\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Function to create a new character
+Character createCharacter() {
+    Character player;
+    printf("Enter your character's name: ");
+    scanf("%s", player.name);
+    printf("Enter your character's health: ");
+    scanf("%d", &player.health);
+    printf("Enter your character's attack: ");
+    scanf("%d", &player.attack);
+    printf("Enter your character's defense: ");
+    scanf("%d", &player.defense);
+    player.experience = 0;
+    player.level = 1;
+    player.inventorySize = 0;
+    return player;
+}
+
+// Function to display character stats
+void displayCharacter(Character player) {
+    printf("\nCharacter Name: %s\n", player.name);
+    printf("Level: %d\n", player.level);
+    printf("Health: %d\n", player.health);
+    printf("Attack: %d\n", player.attack);
+    printf("Defense: %d\n", player.defense);
+    printf("Experience: %d\n", player.experience);
+
+    printf("\nInventory:\n");
+    for (int i = 0; i < player.inventorySize; ++i) {
+        printf("%d. %s (Damage Bonus: %d)\n", i + 1, player.inventory[i].name, player.inventory[i].damageBonus);
+    }
+}
+
+// Function to handle combat between two players
+void combat(Character *attacker, Character *defender) {
+    printf("\n*** Combat Start ***\n");
+
+    while (attacker->health > 0 && defender->health > 0) {
+        int damage;
+        printf("%s's turn:\n", attacker->name);
+        printf("Enter the damage you want to deal: ");
+        scanf("%d", &damage);
+        defender->health -= damage;
+
+        if (defender->health <= 0) {
+            printf("%s defeated %s!\n", attacker->name, defender->name);
+            attacker->experience += 20;
+            attacker->level = attacker->experience / 100 + 1;
+            break;
+        }
+
+        displayCharacter(*attacker);
+        displayCharacter(*defender);
+
+        // Swap attacker and defender for the next turn
+        Character *temp = attacker;
+        attacker = defender;
+        defender = temp;
+    }
+
+    printf("*** Combat End ***\n\n");
+}
+
+// Function to manage inventory
+void manageInventory(Character *player) {
+    int choice;
+    printf("\n*** Inventory Management for %s ***\n", player->name);
+
+    do {
+        printf("1. View Inventory\n");
+        printf("2. Add Item to Inventory\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displayCharacter(*player);
+                break;
+            case 2:
+                addItemToInventory(player);
+                break;
+            case 3:
+                printf("Exiting inventory management.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 3);
+}
+
+// Function to add an item to the inventory
+void addItemToInventory(Character *player) {
+    if (player->inventorySize < MAX_ITEMS) {
+        printf("Enter the name of the item: ");
+        scanf("%s", player->inventory[player->inventorySize].name);
+        printf("Enter the damage bonus of the item: ");
+        scanf("%d", &player->inventory[player->inventorySize].damageBonus);
+        player->inventorySize++;
+        printf("Item added to your inventory!\n");
+    } else {
+        printf("Inventory is full. Cannot add more items.\n");
+    }
+}
