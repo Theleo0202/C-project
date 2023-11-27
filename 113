@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ENTRIES 100
+
+struct DiaryEntry {
+    char date[20];
+    char content[500];
+};
+
+struct Diary {
+    struct DiaryEntry entries[MAX_ENTRIES];
+    int numEntries;
+};
+
+void addEntry(struct Diary *diary, const char *date, const char *content) {
+    if (diary->numEntries < MAX_ENTRIES) {
+        strcpy(diary->entries[diary->numEntries].date, date);
+        strcpy(diary->entries[diary->numEntries].content, content);
+        diary->numEntries++;
+        printf("Entry added successfully!\n");
+    } else {
+        printf("Diary is full. Cannot add more entries.\n");
+    }
+}
+
+void viewEntries(const struct Diary *diary) {
+    if (diary->numEntries > 0) {
+        printf("Diary Entries:\n");
+        for (int i = 0; i < diary->numEntries; i++) {
+            printf("Date: %s\n", diary->entries[i].date);
+            printf("Content: %s\n", diary->entries[i].content);
+            printf("\n");
+        }
+    } else {
+        printf("Diary is empty. No entries to display.\n");
+    }
+}
+
+int findEntryIndex(const struct Diary *diary, const char *date) {
+    for (int i = 0; i < diary->numEntries; i++) {
+        if (strcmp(diary->entries[i].date, date) == 0) {
+            return i;  // Found the entry
+        }
+    }
+    return -1;  // Entry not found
+}
+
+void editEntry(struct Diary *diary, const char *date, const char *newContent) {
+    int index = findEntryIndex(diary, date);
+    if (index != -1) {
+        strcpy(diary->entries[index].content, newContent);
+        printf("Entry edited successfully!\n");
+    } else {
+        printf("Entry not found. Cannot edit.\n");
+    }
+}
+
+void deleteEntry(struct Diary *diary, const char *date) {
+    int index = findEntryIndex(diary, date);
+    if (index != -1) {
+        // Shift entries to fill the gap
+        for (int i = index; i < diary->numEntries - 1; i++) {
+            strcpy(diary->entries[i].date, diary->entries[i + 1].date);
+            strcpy(diary->entries[i].content, diary->entries[i + 1].content);
+        }
+        diary->numEntries--;
+        printf("Entry deleted successfully!\n");
+    } else {
+        printf("Entry not found. Cannot delete.\n");
+    }
+}
+
+int main() {
+    struct Diary myDiary;
+    myDiary.numEntries = 0;
+
+    // Adding entries
+    addEntry(&myDiary, "2023-01-01", "Happy New Year!");
+    addEntry(&myDiary, "2023-01-15", "Visited the park today.");
+
+    // Viewing entries
+    printf("Initial Diary Entries:\n");
+    viewEntries(&myDiary);
+
+    // Searching for an entry
+    const char *searchDate = "2023-01-15";
+    int searchIndex = findEntryIndex(&myDiary, searchDate);
+    if (searchIndex != -1) {
+        printf("\nFound entry for %s:\n", searchDate);
+        printf("Content: %s\n", myDiary.entries[searchIndex].content);
+    } else {
+        printf("\nEntry for %s not found.\n", searchDate);
+    }
+
+    // Editing an entry
+    const char *editDate = "2023-01-01";
+    const char *newContent = "Updated entry for the new year!";
+    editEntry(&myDiary, editDate, newContent);
+    printf("\nDiary Entries after Editing:\n");
+    viewEntries(&myDiary);
+
+    // Deleting an entry
+    const char *deleteDate = "2023-01-15";
+    deleteEntry(&myDiary, deleteDate);
+    printf("\nDiary Entries after Deleting:\n");
+    viewEntries(&myDiary);
+
+    return 0;
+}
